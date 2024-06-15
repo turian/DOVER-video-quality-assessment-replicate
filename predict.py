@@ -36,7 +36,8 @@ class Predictor(BasePredictor):
                 )
                 lines = [r for r in csv.reader(open(tempcsv))]
                 assert len(lines) == 2
-                return json.dumps({k: v for k, v in zip(lines[0], lines[1])})
+                results = {k.strip(): float(v) for k, v in zip(lines[0], lines[1]) if k != "path"}
+                return json.dumps(results)
             except:
                 raise
             finally:
