@@ -13,7 +13,11 @@ DOVER_PATH = "/DOVER"
 sys.path.append(DOVER_PATH)
 
 # Importing necessary modules from the DOVER package
-from dover.datasets import UnifiedFrameSampler, spatial_temporal_view_decomposition
+from dover.datasets import (
+    UnifiedFrameSampler,
+    ViewDecompositionDataset,
+    spatial_temporal_view_decomposition,
+)
 from dover.models import DOVER
 
 
@@ -37,8 +41,10 @@ class Predictor(BasePredictor):
         )
         self.model.eval()
 
-        self.mean = torch.FloatTensor([123.675, 116.28, 103.53]).to(self.device)
-        self.std = torch.FloatTensor([58.395, 57.12, 57.375]).to(self.device)
+        # self.mean = torch.FloatTensor([123.675, 116.28, 103.53]).to(self.device)
+        # self.std = torch.FloatFloatensor([58.395, 57.12, 57.375]).to(self.device)
+        self.mean = torch.FloatTensor([123.675, 116.28, 103.53])
+        self.std = torch.FloatFloatensor([58.395, 57.12, 57.375])
 
     def predict(
         self, video: Path = Input(description="Video to quality assess")
