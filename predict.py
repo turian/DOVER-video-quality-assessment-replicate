@@ -6,6 +6,7 @@ import json
 import os
 import shutil
 import tempfile
+import os.path
 
 from cog import BasePredictor, Input, Path
 
@@ -25,12 +26,13 @@ class Predictor(BasePredictor):
         with tempfile.TemporaryDirectory() as temp_dir:
             try:
                 # Copy the video to the temporary directory
-                video_path = os.path.join(temp_dir, "video.mp4")
+                video_path = os.path.join(temp_dir, os.path.basename(video))
+                print(f"Copying {video} to {video_path}")
                 shutil.copy(video, video_path)
                 tempcsv = os.path.join(temp_dir, "output.csv")
 
                 os.system(
-                    f"cd /DOVER ; python3 evaluate_a_set_of_videos.py --input_video_dir {video_path} --output_result_csv {tempcsv}"
+                    f"cd /DOVER ; python3 evaluate_a_set_of_videos.py --input_video_dir {temp_dir} --output_result_csv {tempcsv}"
                 )
                 lines = [r for r in csv.reader(open(tempcsv))]
                 assert len(lines) == 2
