@@ -6,23 +6,30 @@ build:
   gpu: false
 
   # a list of ubuntu apt packages to install
-  # system_packages:
+  system_packages:
+      - "git"
   #   - "libgl1-mesa-glx"
   #   - "libglib2.0-0"
 
   # python version in the form '3.11' or '3.11.4'
-  python_version: "3.11"
+  #python_version: "3.11"
+  python_version: "3.8"
 
   # a list of packages in the format <package-name>==<version>
-  # python_packages:
+  python_packages:
+      - decord
   #   - "numpy==1.19.4"
   #   - "torch==1.8.0"
   #   - "torchvision==0.9.0"
 
   # commands run after the environment is setup
-  # run:
-  #   - "echo env is ready!"
-  #   - "echo another command if needed"
+  run:
+    - git clone https://github.com/QualityAssessment/DOVER.git
+    - cd DOVER && pip install -e .
+    - mkdir DOVER/pretrained_weights
+    - cd DOVER/pretrained_weights && pwd && wget https://huggingface.co/teowu/DOVER/resolve/main/DOVER.pth?download=true
+    - cd DOVER/pretrained_weights && pwd && wget https://huggingface.co/teowu/DOVER/resolve/main/DOVER_plus_plus.pth?download=true
+    - cd DOVER/pretrained_weights && pwd && wget https://github.com/QualityAssessment/DOVER/releases/download/v0.5.0/DOVER-Mobile.pth
 
 # predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
