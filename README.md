@@ -33,3 +33,4 @@ cog push r8.im/turian/dover-video-quality-assessment
 * Allow DOVER++ and DOVER-mobile
 * Allow batch of videos
 * Don't spawn subprocess
+* Seed

@@ -1,10 +1,11 @@
 import os
 import pickle as pkl
 import sys
-
+import json
 import numpy as np
 import torch
 import yaml
+import random
 from cog import BasePredictor, Input, Path
 from tqdm import tqdm
 
@@ -20,6 +21,16 @@ from dover.datasets import (
 )
 from dover.models import DOVER
 
+def fuse_results(results: list):
+    ## results[0]: aesthetic, results[1]: technical
+    ## thank @dknyxh for raising the issue
+    t, a = (results[1] - 0.1107) / 0.07355, (results[0] + 0.08285) / 0.03774
+    x = t * 0.6104 + a * 0.3896
+    return {
+        "aesthetic": 1 / (1 + np.exp(-a)),
+        "technical": 1 / (1 + np.exp(-t)),
+        "overall": 1 / (1 + np.exp(-x)),
+    }
 
 class Predictor(BasePredictor):
     def setup(self):
@@ -41,15 +52,18 @@ class Predictor(BasePredictor):
         )
         self.model.eval()
 
-        # self.mean = torch.FloatTensor([123.675, 116.28, 103.53]).to(self.device)
-        # self.std = torch.FloatFloatensor([58.395, 57.12, 57.375]).to(self.device)
-        self.mean = torch.FloatTensor([123.675, 116.28, 103.53])
-        self.std = torch.FloatFloatensor([58.395, 57.12, 57.375])
+        self.mean = torch.FloatTensor([123.675, 116.28, 103.53]).to(self.device)
+        self.std = torch.FloatTensor([58.395, 57.12, 57.375]).to(self.device)
 
     def predict(
-        self, video: Path = Input(description="Video to quality assess")
+        self, 
+        video: Path = Input(description="Video to quality assess"),
+        seed: int = 42
     ) -> str:
         """Predict method to process video and output scores"""
+        # Set seed for reproducibility
+        self.set_seed(seed)
+        
         video_path = str(video)
 
         dopt = self.opt["data"]["val-l1080p"]["args"]
@@ -86,9 +100,9 @@ class Predictor(BasePredictor):
             )
 
         results = [np.mean(r.cpu().numpy()) for r in self.model(views)]
-        rescaled_results = self.fuse_results(results)
+        fused_results = self.fuse_results(results)
 
-        return json.dumps(rescaled_results)
+        return json.dumps(fused_results)
 
     def fuse_results(self, results):
         """Fuse aesthetic and technical results into final scores"""
@@ -99,3 +113,11 @@ class Predictor(BasePredictor):
             "technical": 1 / (1 + np.exp(-t)),
             "overall": 1 / (1 + np.exp(-x)),
         }
+
+    def set_seed(self, seed):
+        """Set the seed for reproducibility"""
+        random.seed(seed)
+        np.random.seed(seed)
+        torch.manual_seed(seed)
+        if self.device == 'cuda':
+            torch.cuda.manual_seed_all(seed)
