@@ -2,6 +2,11 @@
 
 Replicate package for [DOVER video quality assessment](https://github.com/VQAssessment/DOVER)
 
+**WARNING: I could not replicate the precise results from [the DOVER
+repo](https://github.com/VQAssessment/DOVER/blob/master/evaluate_one_video.py),
+despite copying their implementation directly and controlling random
+seeding.**
+
 ## DOVER: Disentangled Objective Video Quality Evaluator
 
 ### Overview
@@ -32,5 +37,3 @@ cog push r8.im/turian/dover-video-quality-assessment
 ## TODO
 * Allow DOVER++ and DOVER-mobile
 * Allow batch of videos
-* Don't spawn subprocess
-* Seed
