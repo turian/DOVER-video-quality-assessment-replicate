@@ -23,18 +23,6 @@ from dover.datasets import (
 from dover.models import DOVER
 
 
-def fuse_results(results: list):
-    ## results[0]: aesthetic, results[1]: technical
-    ## thank @dknyxh for raising the issue
-    t, a = (results[1] - 0.1107) / 0.07355, (results[0] + 0.08285) / 0.03774
-    x = t * 0.6104 + a * 0.3896
-    return {
-        "aesthetic": 1 / (1 + np.exp(-a)),
-        "technical": 1 / (1 + np.exp(-t)),
-        "overall": 1 / (1 + np.exp(-x)),
-    }
-
-
 class Predictor(BasePredictor):
     def setup(self):
         """Setup to load the model and configurations"""
