@@ -32,7 +32,7 @@ class Predictor(BasePredictor):
                 os.system(
                     f"cd /DOVER ; python3 evaluate_a_set_of_videos.py --input_video_dir {video_path} --output_result_csv {tempcsv}"
                 )
-                lines = [r for r in csv.open(tempcsv)]
+                lines = [r for r in csv.reader(open(tempcsv))]
                 assert len(lines) == 2
                 return json.dumps({k: v for k, v in zip(lines[0], lines[1])})
             except:
