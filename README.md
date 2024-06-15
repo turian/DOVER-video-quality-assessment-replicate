@@ -10,6 +10,8 @@ DOVER is a specialized video quality assessment model for user-generated
 content, designed to analyze videos from both aesthetic and technical
 perspectives.
 
+![Fig](DOVER-DALLE.jpg)
+
 ### Features
 - **Dual Perspective Analysis**: Separately evaluates aesthetic appeal and technical quality.
 - **Pre-trained Model**: Available on Hugging Face for easy integration.
