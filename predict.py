@@ -1,11 +1,12 @@
+import json
 import os
 import pickle as pkl
+import random
 import sys
-import json
+
 import numpy as np
 import torch
 import yaml
-import random
 from cog import BasePredictor, Input, Path
 from tqdm import tqdm
 
@@ -21,6 +22,7 @@ from dover.datasets import (
 )
 from dover.models import DOVER
 
+
 def fuse_results(results: list):
     ## results[0]: aesthetic, results[1]: technical
     ## thank @dknyxh for raising the issue
@@ -31,6 +33,7 @@ def fuse_results(results: list):
         "technical": 1 / (1 + np.exp(-t)),
         "overall": 1 / (1 + np.exp(-x)),
     }
+
 
 class Predictor(BasePredictor):
     def setup(self):
@@ -56,14 +59,12 @@ class Predictor(BasePredictor):
         self.std = torch.FloatTensor([58.395, 57.12, 57.375]).to(self.device)
 
     def predict(
-        self, 
-        video: Path = Input(description="Video to quality assess"),
-        seed: int = 42
+        self, video: Path = Input(description="Video to quality assess"), seed: int = 42
     ) -> str:
         """Predict method to process video and output scores"""
         # Set seed for reproducibility
         self.set_seed(seed)
-        
+
         video_path = str(video)
 
         dopt = self.opt["data"]["val-l1080p"]["args"]
@@ -92,11 +93,10 @@ class Predictor(BasePredictor):
         for k, v in views.items():
             num_clips = dopt["sample_types"][k].get("num_clips", 1)
             views[k] = (
-                ((v.permute(1, 2, 3, 0) - self.mean) / self.std)
+                ((v.to(self.device).permute(1, 2, 3, 0) - self.mean) / self.std)
                 .permute(3, 0, 1, 2)
                 .reshape(v.shape[0], num_clips, -1, *v.shape[2:])
                 .transpose(0, 1)
-                .to(self.device)
             )
 
         results = [np.mean(r.cpu().numpy()) for r in self.model(views)]
@@ -119,5 +119,5 @@ class Predictor(BasePredictor):
         random.seed(seed)
         np.random.seed(seed)
         torch.manual_seed(seed)
-        if self.device == 'cuda':
+        if self.device == "cuda":
             torch.cuda.manual_seed_all(seed)
