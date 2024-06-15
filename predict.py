@@ -1,12 +1,15 @@
 # Prediction interface for Cog ⚙️
 # https://cog.run/python
 
-from cog import BasePredictor, Input, Path
-import os
-import tempfile
-import shutil
 import csv
 import json
+import os
+import shutil
+import tempfile
+
+from cog import BasePredictor, Input, Path
+
+
 class Predictor(BasePredictor):
     def setup(self) -> None:
         """Load the model into memory to make running multiple predictions efficient"""
@@ -26,7 +29,9 @@ class Predictor(BasePredictor):
                 shutil.copy(video, video_path)
                 tempcsv = os.path.join(temp_dir, "output.csv")
 
-                os.system(f"cd /DOVER ; python3 evaluate_a_set_of_videos.py --input_video_dir {video_path} --output_result_csv {tempcsv}")
+                os.system(
+                    f"cd /DOVER ; python3 evaluate_a_set_of_videos.py --input_video_dir {video_path} --output_result_csv {tempcsv}"
+                )
                 lines = [r for r in csv.open(tempcsv)]
                 assert len(lines) == 2
                 return json.dumps({k: v for k, v in zip(lines[0], lines[1])})
