@@ -31,6 +31,7 @@ build:
     - cd /DOVER/pretrained_weights && pwd && wget https://huggingface.co/teowu/DOVER/resolve/main/DOVER.pth?download=true && mv '/DOVER/pretrained_weights/DOVER.pth?download=true' /DOVER/pretrained_weights/DOVER.pth
     - cd /DOVER/pretrained_weights && pwd && wget https://huggingface.co/teowu/DOVER/resolve/main/DOVER_plus_plus.pth?download=true && mv '/DOVER/pretrained_weights/DOVER_plus_plus.pth?download=true' /DOVER/pretrained_weights/DOVER_plus_plus.pth
     - cd /DOVER/pretrained_weights && pwd && wget https://github.com/QualityAssessment/DOVER/releases/download/v0.5.0/DOVER-Mobile.pth
+    - mkdir -p /root/.cache/torch/hub/checkpoints/ && cd /root/.cache/torch/hub/checkpoints/ && wget "https://dl.fbaipublicfiles.com/convnext/convnext_tiny_1k_224_ema.pth"
 
 # predict.py defines how predictions are run on your model
 predict: "predict.py:Predictor"
